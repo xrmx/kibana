@@ -8,8 +8,13 @@ import { z, lazySchema } from '@kbn/zod/v4';
 import { defineRoute } from '../types';
 import { rangeSchema, serviceTransactionDataSourceSchema } from '../../default_api_types';
 
+export interface ServiceTransactionType {
+  transactionType: string;
+  hasRootTransactions: boolean;
+}
+
 export interface ServiceTransactionTypesResponse {
-  transactionTypes: string[];
+  transactionTypes: ServiceTransactionType[];
 }
 
 export const serviceTransactionTypesRoute = defineRoute<ServiceTransactionTypesResponse>()({

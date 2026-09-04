@@ -22,9 +22,11 @@ jest.mock('../../../context/apm_service/use_service_agent_fetcher', () => ({
 describe('renders chart', () => {
   const serviceName = 'ops-bean';
   beforeEach(() => {
-    jest
-      .spyOn(transactionFetcher, 'useServiceTransactionTypesFetcher')
-      .mockReturnValue({ transactionTypes: ['request'], status: FETCH_STATUS.SUCCESS });
+    jest.spyOn(transactionFetcher, 'useServiceTransactionTypesFetcher').mockReturnValue({
+      transactionTypes: ['request'],
+      transactionTypeDetails: [],
+      status: FETCH_STATUS.SUCCESS,
+    });
   });
   it('renders error when serviceName is not defined', async () => {
     const { getByText } = render(
@@ -62,9 +64,11 @@ describe('renders chart', () => {
   });
 
   it('supports custom transactionType when transactionType is included in transaction types list', async () => {
-    jest
-      .spyOn(transactionFetcher, 'useServiceTransactionTypesFetcher')
-      .mockReturnValue({ transactionTypes: ['request', 'custom'], status: FETCH_STATUS.SUCCESS });
+    jest.spyOn(transactionFetcher, 'useServiceTransactionTypesFetcher').mockReturnValue({
+      transactionTypes: ['request', 'custom'],
+      transactionTypeDetails: [],
+      status: FETCH_STATUS.SUCCESS,
+    });
     const { getByText } = render(
       <ApmEmbeddableContext deps={MOCK_DEPS}>
         <APMAlertingFailedTransactionsChart
@@ -83,9 +87,11 @@ describe('renders chart', () => {
   });
 
   it('does not support custom transactionType when transactionType is not included in transaction types list', async () => {
-    jest
-      .spyOn(transactionFetcher, 'useServiceTransactionTypesFetcher')
-      .mockReturnValue({ transactionTypes: ['request'], status: FETCH_STATUS.SUCCESS });
+    jest.spyOn(transactionFetcher, 'useServiceTransactionTypesFetcher').mockReturnValue({
+      transactionTypes: ['request'],
+      transactionTypeDetails: [],
+      status: FETCH_STATUS.SUCCESS,
+    });
     const { queryByText, getByText } = render(
       <ApmEmbeddableContext deps={MOCK_DEPS}>
         <APMAlertingFailedTransactionsChart

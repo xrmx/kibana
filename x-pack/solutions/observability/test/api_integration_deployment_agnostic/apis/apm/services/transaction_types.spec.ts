@@ -68,9 +68,14 @@ export default function ApiTest({ getService }: DeploymentAgnosticFtrProviderCon
               .outcome('success')
               .timestamp(timestamp);
           }),
-          interval.rate(1).generator((timestamp) => {
+          interval.rate(5).generator((timestamp) => {
+            const parent = instance
+              .transaction({ transactionName: 'Trigger worker', transactionType: 'request' })
+              .timestamp(timestamp);
+
             return instance
               .transaction({ transactionName: 'rm -rf *', transactionType: 'worker' })
+              .parent(parent)
               .duration(100)
               .outcome('failure')
               .timestamp(timestamp);
@@ -85,7 +90,10 @@ export default function ApiTest({ getService }: DeploymentAgnosticFtrProviderCon
         expect(response.status).to.be(200);
         expect(response.body.transactionTypes.length).to.be.greaterThan(0);
 
-        expect(response.body.transactionTypes).to.eql(['request', 'worker']);
+        expect(response.body.transactionTypes).to.eql([
+          { transactionType: 'request', hasRootTransactions: true },
+          { transactionType: 'worker', hasRootTransactions: false },
+        ]);
       });
     });
   });

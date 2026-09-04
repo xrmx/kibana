@@ -9,6 +9,7 @@ import type { ReactNode } from 'react';
 import React, { createContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import type { History } from 'history';
+import type { ServiceTransactionType } from '@kbn/apm-api-shared';
 import { ApmDocumentType } from '../../../common/document_type';
 import { getDefaultTransactionType } from '../../../common/transaction_types';
 import { useServiceTransactionTypesFetcher } from './use_service_transaction_types_fetcher';
@@ -30,6 +31,7 @@ export interface APMServiceContextValue {
   transactionType?: string;
   transactionTypeStatus: FETCH_STATUS;
   transactionTypes: string[];
+  transactionTypeDetails?: ServiceTransactionType[];
   runtimeName?: string;
   runtimeVersion?: string;
   fallbackToTransactions: boolean;
@@ -40,6 +42,7 @@ export const APMServiceContext = createContext<APMServiceContextValue>({
   serviceName: '',
   transactionTypeStatus: FETCH_STATUS.NOT_INITIATED,
   transactionTypes: [],
+  transactionTypeDetails: [],
   fallbackToTransactions: false,
   serviceAgentStatus: FETCH_STATUS.NOT_INITIATED,
 });
@@ -77,7 +80,11 @@ export function ApmServiceContextProvider({ children }: { children: ReactNode })
     numBuckets: 100,
   });
 
-  const { transactionTypes, status: transactionTypeStatus } = useServiceTransactionTypesFetcher({
+  const {
+    transactionTypes,
+    transactionTypeDetails,
+    status: transactionTypeStatus,
+  } = useServiceTransactionTypesFetcher({
     serviceName,
     start,
     end,
@@ -107,6 +114,7 @@ export function ApmServiceContextProvider({ children }: { children: ReactNode })
         transactionType: currentTransactionType,
         transactionTypeStatus,
         transactionTypes,
+        transactionTypeDetails,
         runtimeName,
         runtimeVersion,
         fallbackToTransactions,

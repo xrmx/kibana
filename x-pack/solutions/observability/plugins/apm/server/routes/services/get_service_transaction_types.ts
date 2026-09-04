@@ -7,10 +7,14 @@
 
 import { rangeQuery } from '@kbn/observability-plugin/server';
 import type { ServiceTransactionTypesResponse } from '@kbn/apm-api-shared';
-import type { ApmServiceTransactionDocumentType } from '../../../common/document_type';
+import {
+  ApmDocumentType,
+  type ApmServiceTransactionDocumentType,
+} from '../../../common/document_type';
 import { SERVICE_NAME, TRANSACTION_TYPE } from '../../../common/es_fields/apm';
 import type { APMEventClient } from '../../lib/helpers/create_es_client/create_apm_event_client';
 import type { RollupInterval } from '../../../common/rollup';
+import { isRootTransaction } from '../../lib/helpers/transactions';
 
 export async function getServiceTransactionTypes({
   apmEventClient,
@@ -46,6 +50,11 @@ export async function getServiceTransactionTypes({
     aggs: {
       types: {
         terms: { field: TRANSACTION_TYPE, size: 100 },
+        aggs: {
+          rootTransactions: {
+            filter: isRootTransaction(documentType !== ApmDocumentType.TransactionEvent),
+          },
+        },
       },
     },
   };
@@ -53,9 +62,17 @@ export async function getServiceTransactionTypes({
   const { aggregations } = await apmEventClient.search('get_service_transaction_types', params);
   const transactionTypes =
     aggregations?.types.buckets
-      .map((bucket) => bucket.key as string)
       // we exclude page-exit transactions because they are not relevant for the apm app
       // and are only used for the INP values
-      .filter((value) => value !== 'page-exit') || [];
+      .filter((bucket) => bucket.key !== 'page-exit')
+      .map((bucket) => ({
+        transactionType: bucket.key as string,
+        hasRootTransactions: bucket.rootTransactions.doc_count > 0,
+      }))
+      .sort(
+        (transactionTypeA, transactionTypeB) =>
+          Number(transactionTypeB.hasRootTransactions) -
+          Number(transactionTypeA.hasRootTransactions)
+      ) || [];
   return { transactionTypes };
 }
