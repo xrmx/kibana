@@ -58,10 +58,7 @@ export type {
 export type { ServiceMetadataDetails } from './service_metadata_details';
 export type { ServiceMetadataIcons } from './service_metadata_icons';
 export type { ServiceAgentResponse } from './service_agent';
-export type {
-  ServiceTransactionType,
-  ServiceTransactionTypesResponse,
-} from './service_transaction_types';
+export type { ServiceTransactionTypesResponse } from './service_transaction_types';
 export type { ServiceNodeMetadataResponse } from './service_node_metadata';
 export type { ServiceAnnotationResponse } from './service_annotations_search';
 export type {

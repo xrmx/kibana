@@ -99,7 +99,6 @@ const stories: Meta<Args> = {
         transactionType: 'request',
         transactionTypeStatus: FETCH_STATUS.SUCCESS,
         transactionTypes: ['request'],
-        transactionTypeDetails: [],
         fallbackToTransactions: false,
         serviceAgentStatus: FETCH_STATUS.SUCCESS,
       } as unknown as APMServiceContextValue;

@@ -65,14 +65,11 @@ export async function getServiceTransactionTypes({
       // we exclude page-exit transactions because they are not relevant for the apm app
       // and are only used for the INP values
       .filter((bucket) => bucket.key !== 'page-exit')
-      .map((bucket) => ({
-        transactionType: bucket.key as string,
-        hasRootTransactions: bucket.rootTransactions.doc_count > 0,
-      }))
       .sort(
-        (transactionTypeA, transactionTypeB) =>
-          Number(transactionTypeB.hasRootTransactions) -
-          Number(transactionTypeA.hasRootTransactions)
-      ) || [];
+        (bucketA, bucketB) =>
+          Number(bucketB.rootTransactions.doc_count > 0) -
+          Number(bucketA.rootTransactions.doc_count > 0)
+      )
+      .map((bucket) => bucket.key as string) || [];
   return { transactionTypes };
 }

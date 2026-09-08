@@ -5,12 +5,11 @@
  * 2.0.
  */
 
-import type { ServiceTransactionType } from '@kbn/apm-api-shared';
+import { useFetcher } from '../../hooks/use_fetcher';
 import type { RollupInterval } from '../../../common/rollup';
 import type { ApmTransactionDocumentType } from '../../../common/document_type';
-import { useFetcher } from '../../hooks/use_fetcher';
 
-const INITIAL_DATA: { transactionTypes: ServiceTransactionType[] } = { transactionTypes: [] };
+const INITIAL_DATA = { transactionTypes: [] };
 
 export function useServiceTransactionTypesFetcher({
   serviceName,
@@ -39,9 +38,5 @@ export function useServiceTransactionTypesFetcher({
     [serviceName, start, end, documentType, rollupInterval]
   );
 
-  return {
-    transactionTypes: data.transactionTypes.map(({ transactionType }) => transactionType),
-    transactionTypeDetails: data.transactionTypes,
-    status,
-  };
+  return { transactionTypes: data.transactionTypes, status };
 }

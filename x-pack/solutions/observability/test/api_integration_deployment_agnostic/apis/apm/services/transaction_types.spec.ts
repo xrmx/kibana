@@ -90,10 +90,7 @@ export default function ApiTest({ getService }: DeploymentAgnosticFtrProviderCon
         expect(response.status).to.be(200);
         expect(response.body.transactionTypes.length).to.be.greaterThan(0);
 
-        expect(response.body.transactionTypes).to.eql([
-          { transactionType: 'request', hasRootTransactions: true },
-          { transactionType: 'worker', hasRootTransactions: false },
-        ]);
+        expect(response.body.transactionTypes).to.eql(['request', 'worker']);
       });
     });
   });
