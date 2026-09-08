@@ -60,6 +60,8 @@ export default function ApiTest({ getService }: DeploymentAgnosticFtrProviderCon
 
         const instance = apm.service(serviceName, 'production', 'node').instance('instance');
 
+        // Index fewer root `request` transactions than child-only `worker` transactions to verify
+        // that root transaction types are prioritized over the terms aggregation's document count.
         await apmSynthtraceEsClient.index([
           interval.rate(3).generator((timestamp) => {
             return instance
@@ -84,7 +86,7 @@ export default function ApiTest({ getService }: DeploymentAgnosticFtrProviderCon
       });
 
       after(() => apmSynthtraceEsClient.clean());
-      it('displays available tx types', async () => {
+      it('prioritizes transaction types with root transactions over child-only types', async () => {
         const response = await getTransactionTypes();
 
         expect(response.status).to.be(200);
