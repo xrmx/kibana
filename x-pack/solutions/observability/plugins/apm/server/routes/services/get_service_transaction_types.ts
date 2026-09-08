@@ -65,6 +65,7 @@ export async function getServiceTransactionTypes({
       // we exclude page-exit transactions because they are not relevant for the apm app
       // and are only used for the INP values
       .filter((bucket) => bucket.key !== 'page-exit')
+      // Prefer root transaction types so the UI fallback does not select a child-only type.
       .sort(
         (bucketA, bucketB) =>
           Number(bucketB.rootTransactions.doc_count > 0) -
